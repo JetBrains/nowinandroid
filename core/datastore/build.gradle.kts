@@ -31,6 +31,13 @@ android {
             isReturnDefaultValues = true
         }
     }
+    // WA for https://github.com/google/protobuf-gradle-plugin/issues/714
+    androidComponents.beforeVariants {
+        android.sourceSets.register(it.name) {
+            java.srcDir(buildDir.resolve("generated/source/proto/${it.name}/java"))
+            kotlin.srcDir(buildDir.resolve("generated/source/proto/${it.name}/kotlin"))
+        }
+    }
 }
 
 // Setup protobuf configuration, generating lite Java and Kotlin classes

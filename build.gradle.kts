@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 /*
  * Copyright 2021 The Android Open Source Project
  *
@@ -18,6 +20,11 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven("https://androidx.dev/storage/compose-compiler/repository")
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+        val kotlin_repo_url: String? by project
+        logger.info("[COMMUNITY_PROJECT_BUILD] kotlin repository url: $kotlin_repo_url")
+        kotlin_repo_url?.also { maven(it) }
 
         // Android Build Server
         maven { url = uri("../nowinandroid-prebuilts/m2repository") }
@@ -25,6 +32,20 @@ buildscript {
     dependencies {
         classpath(libs.google.oss.licenses.plugin) {
             exclude(group = "com.google.protobuf")
+        }
+    }
+}
+
+allprojects {
+    tasks.withType<KotlinCompile>().configureEach {
+        kotlinOptions {
+            freeCompilerArgs += listOf(
+                "-P",
+                "plugin:androidx.compose.compiler.plugins.kotlin:" +
+                    "suppressKotlinVersionCompatibilityCheck=${libs.versions.kotlin.get()}",
+                "-Xmetadata-version=1.8" //WA for compatibility with Hilt see
+            // https://jetbrains.slack.com/archives/C04857B0BNE/p1688641699713959?thread_ts=1688639092.588919&cid=C04857B0BNE
+            )
         }
     }
 }
