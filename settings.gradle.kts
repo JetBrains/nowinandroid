@@ -44,8 +44,10 @@ dependencyResolutionManagement {
     logger.info("[COMMUNITY_PROJECT_BUILD] kotlin version: $kotlin_version")
     versionCatalogs {
         create("libs") {
-            kotlin_version?.also { version("kotlin", it) }
-            compose_compiler?.also { version("androidxComposeCompiler", it) }
+            kotlin_version?.also {
+                version("kotlin", it)
+                version("androidxComposeCompiler", it) // dev kotlin and dev compose should be of one version
+            }
             agp?.also { version("androidGradlePlugin", it) }
             ksp?.also { version("ksp", it) }
         }

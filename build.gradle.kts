@@ -37,15 +37,26 @@ buildscript {
 }
 
 allprojects {
-    tasks.withType<KotlinCompile>().configureEach {
-        kotlinOptions {
-            freeCompilerArgs += listOf(
-                "-P",
-                "plugin:androidx.compose.compiler.plugins.kotlin:" +
-                    "suppressKotlinVersionCompatibilityCheck=${libs.versions.kotlin.get()}",
-                "-Xmetadata-version=1.8" //WA for compatibility with Hilt see
-            // https://jetbrains.slack.com/archives/C04857B0BNE/p1688641699713959?thread_ts=1688639092.588919&cid=C04857B0BNE
-            )
+    val kotlin_version: String? by project
+    kotlin_version?.also {
+        configurations.all {
+            resolutionStrategy.eachDependency {
+                if (requested.group == "androidx.compose.compiler" && requested.name == "compiler") {
+                    useTarget("org.jetbrains.kotlin.experimental.compose:compiler:$it")
+                    because("Experimental developer version of compose")
+                }
+            }
+        }
+        tasks.withType<KotlinCompile>().configureEach {
+            kotlinOptions {
+                freeCompilerArgs += listOf(
+                    "-P",
+                    "plugin:androidx.compose.compiler.plugins.kotlin:" +
+                        "suppressKotlinVersionCompatibilityCheck=$it",
+                    "-Xmetadata-version=1.8" //WA for compatibility with Hilt see
+                    // https://jetbrains.slack.com/archives/C04857B0BNE/p1688641699713959?thread_ts=1688639092.588919&cid=C04857B0BNE
+                )
+            }
         }
     }
 }
