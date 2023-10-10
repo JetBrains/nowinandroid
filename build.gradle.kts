@@ -20,6 +20,7 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        mavenLocal()
         maven("https://androidx.dev/storage/compose-compiler/repository")
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
         val kotlin_repo_url: String? by project
