@@ -43,8 +43,8 @@ allprojects {
         configurations.all {
             resolutionStrategy.eachDependency {
                 if (requested.group == "androidx.compose.compiler" && requested.name == "compiler") {
-                    useTarget("org.jetbrains.kotlin.experimental.compose:compiler:$it")
-                    because("Experimental developer version of compose")
+                    useTarget("org.jetbrains.kotlin:kotlin-compose-compiler-plugin-embeddable:$it")
+                    because("Temporary WA for compose compiler migration")
                 }
             }
         }
