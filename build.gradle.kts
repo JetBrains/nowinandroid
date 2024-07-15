@@ -21,8 +21,6 @@ buildscript {
         google()
         mavenCentral()
         mavenLocal()
-        maven("https://androidx.dev/storage/compose-compiler/repository")
-        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
         val kotlin_repo_url: String? by project
         logger.info("[COMMUNITY_PROJECT_BUILD] kotlin repository url: $kotlin_repo_url")
         kotlin_repo_url?.also { maven(it) }
@@ -38,27 +36,13 @@ buildscript {
 }
 
 allprojects {
-    val kotlin_version: String? by project
-    kotlin_version?.also {
-        configurations.all {
-            resolutionStrategy.eachDependency {
-                if (requested.group == "androidx.compose.compiler" && requested.name == "compiler") {
-                    useTarget("org.jetbrains.kotlin:kotlin-compose-compiler-plugin-embeddable:$it")
-                    because("Temporary WA for compose compiler migration")
-                }
-            }
-        }
-        tasks.withType<KotlinCompile>().configureEach {
-            kotlinOptions {
-                freeCompilerArgs += listOf(
-                    "-P",
-                    "plugin:androidx.compose.compiler.plugins.kotlin:" +
-                        "suppressKotlinVersionCompatibilityCheck=$it",
-                    "-Xconsistent-data-class-copy-visibility",
-                    "-Xmetadata-version=1.8" //WA for compatibility with Hilt see
-                    // https://jetbrains.slack.com/archives/C04857B0BNE/p1688641699713959?thread_ts=1688639092.588919&cid=C04857B0BNE
-                )
-            }
+    tasks.withType<KotlinCompile>().configureEach {
+        kotlinOptions {
+            freeCompilerArgs += listOf(
+                "-Xconsistent-data-class-copy-visibility",
+                "-Xmetadata-version=1.8" //WA for compatibility with Hilt see
+                // https://jetbrains.slack.com/archives/C04857B0BNE/p1688641699713959?thread_ts=1688639092.588919&cid=C04857B0BNE
+            )
         }
     }
 }
@@ -74,4 +58,5 @@ plugins {
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.secrets) apply false
+    alias(libs.plugins.compose.compiler) apply false
 }

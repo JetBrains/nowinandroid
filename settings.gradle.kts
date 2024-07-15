@@ -21,7 +21,6 @@ pluginManagement {
         mavenCentral()
         mavenLocal()
         gradlePluginPortal()
-        maven("https://androidx.dev/storage/compose-compiler/repository")
         val kotlin_repo_url: String? by settings
         logger.info("[COMMUNITY_PROJECT_BUILD] kotlin repository url: $kotlin_repo_url")
         kotlin_repo_url?.also { maven(it) }
@@ -34,13 +33,10 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         mavenLocal()
-        maven("https://androidx.dev/storage/compose-compiler/repository")
-        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
         val kotlin_repo_url: String? by settings
         kotlin_repo_url?.also { maven(it) }
     }
     val kotlin_version: String? by settings
-    val compose_compiler: String? by settings
     val agp: String? by settings
     val ksp: String? by settings
     logger.info("[COMMUNITY_PROJECT_BUILD] kotlin version: $kotlin_version")
@@ -48,7 +44,6 @@ dependencyResolutionManagement {
         create("libs") {
             kotlin_version?.also {
                 version("kotlin", it)
-                version("androidxComposeCompiler", it) // dev kotlin and dev compose should be of one version
             }
             agp?.also { version("androidGradlePlugin", it) }
             ksp?.also { version("ksp", it) }
