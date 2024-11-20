@@ -107,8 +107,8 @@ dependencies {
 
     ksp(libs.hilt.compiler)
 
-    debugImplementation(libs.androidx.compose.ui.testManifest)
-    debugImplementation(projects.uiTestHiltManifest)
+    implementation(libs.androidx.compose.ui.testManifest)
+    implementation(projects.uiTestHiltManifest)
 
     kspTest(libs.hilt.compiler)
 
@@ -132,7 +132,7 @@ dependencies {
     androidTestImplementation(libs.hilt.android.testing)
     androidTestImplementation(libs.kotlin.test)
 
-    baselineProfile(projects.benchmarks)
+    //baselineProfile(projects.benchmarks)
 }
 
 baselineProfile {
@@ -144,6 +144,6 @@ baselineProfile {
     dexLayoutOptimization = true
 }
 
-dependencyGuard {
-    configuration("prodReleaseRuntimeClasspath")
-}
+//dependencyGuard {
+//    configuration("prodReleaseRuntimeClasspath")
+//}

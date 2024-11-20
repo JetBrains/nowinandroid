@@ -31,10 +31,21 @@ dependencyResolutionManagement {
             }
         }
         mavenCentral()
+        val kotlin_repo_url: String? by settings
+        logger.info("Custom kotlin repository url: $kotlin_repo_url")
+        kotlin_repo_url?.also { maven(it) }
     }
+    val kotlin_version: String? by settings
+    val ksp_version: String? by settings
     versionCatalogs {
         create("libs") {
             from(files("../gradle/libs.versions.toml"))
+            kotlin_version?.also {
+                version("kotlin", it)
+            }
+            ksp_version?.also {
+                version("ksp", it)
+            }
         }
     }
 }

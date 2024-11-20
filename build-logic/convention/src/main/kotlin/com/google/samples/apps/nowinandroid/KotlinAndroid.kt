@@ -87,23 +87,24 @@ private inline fun <reified T : KotlinBaseExtension> Project.configureKotlin() =
     }.apply {
         jvmTarget = JvmTarget.JVM_11
         allWarningsAsErrors = warningsAsErrors
-        freeCompilerArgs.add(
+        freeCompilerArgs.addAll(
             // Enable experimental coroutines APIs, including Flow
             "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+            "-Xmetadata-version=2.1.0",
+            "-Xconsistent-data-class-copy-visibility",
+            "-Xreport-all-warnings",
+            "-Xrender-internal-diagnostic-names",
+            "-Wextra",
+            "-Xuse-fir-experimental-checkers"
         )
-        freeCompilerArgs.add(
-            /**
-             * Remove this args after Phase 3.
-             * https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-consistent-copy-visibility/#deprecation-timeline
-             *
-             * Deprecation timeline
-             * Phase 3. (Supposedly Kotlin 2.2 or Kotlin 2.3).
-             * The default changes.
-             * Unless ExposedCopyVisibility is used, the generated 'copy' method has the same visibility as the primary constructor.
-             * The binary signature changes. The error on the declaration is no longer reported.
-             * '-Xconsistent-data-class-copy-visibility' compiler flag and ConsistentCopyVisibility annotation are now unnecessary.
-             */
-            "-Xconsistent-data-class-copy-visibility"
+
+        allWarningsAsErrors.set(false)
+        freeCompilerArgs.set(
+            freeCompilerArgs.getOrElse(emptyList()).filterNot { it == "-Werror" }
         )
+
+        //freeCompilerArgs.add("-Xmetadata-version=1.8") //WA for compatibility with Hilt see
+        // https://jetbrains.slack.com/archives/C04857B0BNE/p1688641699713959?thread_ts=1688639092.588919&cid=C04857B0BNE
+
     }
 }

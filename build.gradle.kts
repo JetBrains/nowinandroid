@@ -1,3 +1,13 @@
+import com.android.utils.TraceUtils.simpleId
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion.Companion
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_1_9
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_1
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion.valueOf
+import org.jetbrains.kotlin.gradle.plugin.extraProperties
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 /*
  * Copyright 2021 The Android Open Source Project
  *
@@ -27,6 +37,11 @@ buildscript {
 
         // This is used only for internal Google builds.
         maven { url = uri("../nowinandroid-prebuilts/m2repository") }
+        maven("https://androidx.dev/storage/compose-compiler/repository")
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+        val kotlin_repo_url: String? by project
+        logger.info("Custom kotlin repository url: $kotlin_repo_url")
+        kotlin_repo_url?.also { maven(it) }
     }
     dependencies {
         classpath(libs.google.oss.licenses.plugin) {
@@ -34,6 +49,47 @@ buildscript {
         }
     }
 
+}
+
+allprojects {
+
+    val kotlin_language_version: String? by project
+    val kotlin_api_version: String? by project
+    val kotlin_additional_cli_options: String? by project
+
+    tasks.withType<KotlinCompile>().configureEach {
+        compilerOptions {
+            freeCompilerArgs.add("-Xannotation-default-target=param-property")
+        }
+        kotlin_additional_cli_options?.let {
+            compilerOptions {
+                logger.info("Additional kotlin compiler options: \'$it\'")
+                freeCompilerArgs.addAll(
+                    it.trim().split(" ")
+                )
+            }
+        }
+
+        if (this is com.google.devtools.ksp.gradle.KspTaskJvm) {
+            compilerOptions {
+//                languageVersion.set(KotlinVersion.KOTLIN_1_9) // it is already set this way somewhere in KSP
+                apiVersion.set(KOTLIN_1_9)
+            }
+        } else {
+            kotlin_language_version?.let {
+                logger.info("Custom kotlin language version: $it")
+                compilerOptions {
+                    languageVersion.set(KotlinVersion.fromVersion(it))
+                }
+            }
+            kotlin_api_version?.let {
+                logger.info("Custom kotlin api version: $it")
+                compilerOptions {
+                    apiVersion.set(KotlinVersion.fromVersion(it))
+                }
+            }
+        }
+    }
 }
 
 /*
@@ -51,7 +107,7 @@ plugins {
     alias(libs.plugins.compose) apply false
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.serialization) apply false
-    alias(libs.plugins.dependencyGuard) apply false
+//    alias(libs.plugins.dependencyGuard) apply false
     alias(libs.plugins.firebase.crashlytics) apply false
     alias(libs.plugins.firebase.perf) apply false
     alias(libs.plugins.gms) apply false

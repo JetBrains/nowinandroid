@@ -71,6 +71,6 @@ dependencies {
     implementation(projects.core.ui)
 }
 
-dependencyGuard {
-    configuration("releaseRuntimeClasspath")
-}
+//dependencyGuard {
+//    configuration("releaseRuntimeClasspath")
+//}
