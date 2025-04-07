@@ -39,21 +39,39 @@ buildscript {
 allprojects {
     tasks.withType<KotlinCompilationTask<*>>().configureEach {
         compilerOptions {
-            freeCompilerArgs.add("-Xconsistent-data-class-copy-visibility")
-            freeCompilerArgs.add("-Xmetadata-version=1.8") //WA for compatibility with Hilt see
-            // https://jetbrains.slack.com/archives/C04857B0BNE/p1688641699713959?thread_ts=1688639092.588919&cid=C04857B0BNE
+            freeCompilerArgs.addAll(
+                "-Xconsistent-data-class-copy-visibility",
+                "-Xmetadata-version=1.8", //WA for compatibility with Hilt, see https://jetbrains.slack.com/archives/C04857B0BNE/p1688641699713959?thread_ts=1688639092.588919&cid=C04857B0BNE
+                "-Xreport-all-warnings",
+                "-Xrender-internal-diagnostic-names",
+                "-Wextra",
+                "-Xuse-fir-experimental-checkers",
+            )
 
             val kotlin_language_version: String? by project
-            logger.info("[COMMUNITY_PROJECT_BUILD] kotlin language version: $kotlin_language_version")
-            kotlin_language_version?.also {
+            kotlin_language_version?.let {
+                logger.info("[COMMUNITY_PROJECT_BUILD] kotlin language version: $it")
                 languageVersion.set(KotlinVersion.fromVersion(it))
             }
 
             val kotlin_api_version: String? by project
-            logger.info("[COMMUNITY_PROJECT_BUILD] kotlin api version: $kotlin_api_version")
-            kotlin_api_version?.also {
+            kotlin_api_version?.let {
+                logger.info("[COMMUNITY_PROJECT_BUILD] kotlin api version: $it")
                 apiVersion.set(KotlinVersion.fromVersion(it))
             }
+
+            val kotlin_additional_cli_options: String? by project
+            kotlin_additional_cli_options?.let {
+                logger.info("Additional kotlin compiler options: \'$it\'")
+                freeCompilerArgs.addAll(
+                    it.trim().split(" "),
+                )
+            }
+
+            allWarningsAsErrors.set(false)
+            freeCompilerArgs.set(
+                freeCompilerArgs.getOrElse(emptyList()).filterNot { it == "-Werror" },
+            )
         }
     }
 }
