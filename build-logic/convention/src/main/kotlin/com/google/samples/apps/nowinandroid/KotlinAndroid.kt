@@ -94,8 +94,6 @@ private inline fun <reified T : KotlinBaseExtension> Project.configureKotlin() =
             "-Xconsistent-data-class-copy-visibility",
             "-Xreport-all-warnings",
             "-Xrender-internal-diagnostic-names",
-            "-Wextra",
-            "-Xuse-fir-experimental-checkers"
         )
 
         allWarningsAsErrors.set(false)
