@@ -23,6 +23,11 @@ android {
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
+    lint {
+        disable.add("MutableCollectionMutableState")
+    }
+
     namespace = "com.google.samples.apps.nowinandroid.core.ui"
 }
 

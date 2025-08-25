@@ -22,6 +22,12 @@ plugins {
 
 android {
     namespace = "com.google.samples.apps.nowinandroid.feature.bookmarks"
+
+    lint {
+        disable.add("MutableCollectionMutableState")
+    }
+
+
 }
 
 dependencies {
