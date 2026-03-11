@@ -26,6 +26,9 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+        val kotlin_repo_url: String? by settings
+        logger.info("Custom kotlin repository url: $kotlin_repo_url")
+        kotlin_repo_url?.also { maven(it) }
     }
 }
 
@@ -40,6 +43,18 @@ dependencyResolutionManagement {
             }
         }
         mavenCentral()
+        val kotlin_repo_url: String? by settings
+        logger.info("Custom kotlin repository url: $kotlin_repo_url")
+        kotlin_repo_url?.also { maven(it) }
+    }
+    val kotlin_version: String? by settings
+
+    versionCatalogs {
+        create("libs") {
+            kotlin_version?.also {
+                version("kotlin", it)
+            }
+        }
     }
 }
 rootProject.name = "nowinandroid"

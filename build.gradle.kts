@@ -1,3 +1,9 @@
+import com.google.devtools.ksp.gradle.KspAATask
+import com.google.devtools.ksp.gradle.model.Ksp
+import org.gradle.kotlin.dsl.support.kotlinCompilerOptions
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+
 /*
  * Copyright 2021 The Android Open Source Project
  *
@@ -13,6 +19,60 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+buildscript {
+    repositories {
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
+        mavenCentral()
+
+        // This is used only for internal Google builds.
+        maven { url = uri("../nowinandroid-prebuilts/m2repository") }
+        maven("https://androidx.dev/storage/compose-compiler/repository")
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+        val kotlin_repo_url: String? by project
+        logger.info("Custom kotlin repository url: $kotlin_repo_url")
+        kotlin_repo_url?.also { maven(it) }
+    }
+}
+allprojects {
+
+    val kotlin_language_version: String? by project
+    val kotlin_api_version: String? by project
+    val kotlin_additional_cli_options: String? by project
+
+    tasks.withType<KotlinCompile>().configureEach {
+        compilerOptions {
+            freeCompilerArgs.add("-Xannotation-default-target=param-property")
+            freeCompilerArgs.add("-Xmetadata-version=2.3.0")
+        }
+        kotlin_additional_cli_options?.let {
+            compilerOptions {
+                logger.info("Additional kotlin compiler options: \'$it\'")
+                freeCompilerArgs.addAll(
+                    it.trim().split(" "),
+                )
+            }
+        }
+
+        kotlin_language_version?.let {
+            logger.info("Custom kotlin language version: $it")
+            compilerOptions {
+                languageVersion.set(KotlinVersion.fromVersion(it))
+            }
+        }
+        kotlin_api_version?.let {
+            logger.info("Custom kotlin api version: $it")
+            compilerOptions {
+                apiVersion.set(KotlinVersion.fromVersion(it))
+            }
+        }
+    }
+}
 
 /*
  * By listing all the plugins used throughout all subprojects in the root project build script, it
