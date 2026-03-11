@@ -87,9 +87,12 @@ private inline fun <reified T : KotlinBaseExtension> Project.configureKotlin() =
     }.apply {
         jvmTarget = JvmTarget.JVM_11
         allWarningsAsErrors = warningsAsErrors
-        freeCompilerArgs.add(
+        freeCompilerArgs.addAll(
             // Enable experimental coroutines APIs, including Flow
             "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+            "-Xmetadata-version=2.3.0",
+            "-Xreport-all-warnings",
+            "-Xrender-internal-diagnostic-names",
         )
         freeCompilerArgs.add(
             /**
@@ -104,6 +107,11 @@ private inline fun <reified T : KotlinBaseExtension> Project.configureKotlin() =
              * '-Xconsistent-data-class-copy-visibility' compiler flag and ConsistentCopyVisibility annotation are now unnecessary.
              */
             "-Xconsistent-data-class-copy-visibility",
+        )
+
+        allWarningsAsErrors.set(false)
+        freeCompilerArgs.set(
+            freeCompilerArgs.getOrElse(emptyList()).filterNot { it == "-Werror" },
         )
     }
 }
