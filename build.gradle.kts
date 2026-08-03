@@ -35,8 +35,18 @@ buildscript {
         maven("https://androidx.dev/storage/compose-compiler/repository")
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
         val kotlin_repo_url: String? by project
+        val kotlin_version: String? by project
         logger.info("Custom kotlin repository url: $kotlin_repo_url")
-        kotlin_repo_url?.also { maven(it) }
+        if (!kotlin_repo_url.isNullOrEmpty() && !kotlin_version.isNullOrEmpty()) {
+                        exclusiveContent {
+                                forRepository {
+                                        maven(kotlin_repo_url!!)
+                                    }
+                                filter {
+                                        includeVersionByRegex("org.jetbrains.kotlin", ".*", kotlin_version!!)
+                                    }
+                            }
+                    }
     }
 }
 allprojects {

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 pluginManagement {
     includeBuild("build-logic")
     repositories {
@@ -26,13 +25,25 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+
         val kotlin_repo_url: String? by settings
+        val kotlin_version: String? by settings
         logger.info("Custom kotlin repository url: $kotlin_repo_url")
-        kotlin_repo_url?.also { maven(it) }
+        if (!kotlin_repo_url.isNullOrEmpty() && !kotlin_version.isNullOrEmpty()) {
+            exclusiveContent {
+                forRepository {
+                    maven(kotlin_repo_url!!)
+                }
+                filter {
+                    includeVersionByRegex("org.jetbrains.kotlin.*", ".*", kotlin_version!!)
+                }
+            }
+        }
     }
 }
 
 dependencyResolutionManagement {
+    val kotlin_version: String? by settings
     repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
     repositories {
         google {
@@ -43,11 +54,20 @@ dependencyResolutionManagement {
             }
         }
         mavenCentral()
+
         val kotlin_repo_url: String? by settings
         logger.info("Custom kotlin repository url: $kotlin_repo_url")
-        kotlin_repo_url?.also { maven(it) }
+        if (!kotlin_repo_url.isNullOrEmpty() && !kotlin_version.isNullOrEmpty()) {
+            exclusiveContent {
+                forRepository {
+                    maven(kotlin_repo_url!!)
+                }
+                filter {
+                    includeVersionByRegex("org.jetbrains.kotlin.*", ".*", kotlin_version!!)
+                }
+            }
+        }
     }
-    val kotlin_version: String? by settings
 
     versionCatalogs {
         create("libs") {

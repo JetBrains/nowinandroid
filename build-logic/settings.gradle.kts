@@ -15,6 +15,7 @@
  */
 
 pluginManagement {
+    val kotlin_version: String? by settings
     repositories {
         gradlePluginPortal()
         google()
@@ -22,11 +23,21 @@ pluginManagement {
         mavenCentral()
         val kotlin_repo_url: String? by settings
         logger.info("Custom kotlin repository url: $kotlin_repo_url")
-        kotlin_repo_url?.also { maven(it) }
+        if (!kotlin_repo_url.isNullOrEmpty() && !kotlin_version.isNullOrEmpty()) {
+            exclusiveContent {
+                forRepository {
+                    maven(kotlin_repo_url!!)
+                }
+                filter {
+                    includeVersionByRegex("org.jetbrains.kotlin.*", ".*", kotlin_version!!)
+                }
+            }
+        }
     }
 }
 
 dependencyResolutionManagement {
+    val kotlin_version: String? by settings
     repositories {
         google {
             content {
@@ -38,9 +49,18 @@ dependencyResolutionManagement {
         mavenCentral()
         val kotlin_repo_url: String? by settings
         logger.info("Custom kotlin repository url: $kotlin_repo_url")
-        kotlin_repo_url?.also { maven(it) }
+        if (!kotlin_repo_url.isNullOrEmpty() && !kotlin_version.isNullOrEmpty()) {
+            exclusiveContent {
+                forRepository {
+                    maven(kotlin_repo_url!!)
+                }
+                filter {
+                    includeVersionByRegex("org.jetbrains.kotlin", ".*", kotlin_version!!)
+                }
+            }
+        }
     }
-    val kotlin_version: String? by settings
+
     versionCatalogs {
         create("libs") {
             from(files("../gradle/libs.versions.toml"))
