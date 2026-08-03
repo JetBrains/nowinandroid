@@ -19,36 +19,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-buildscript {
-    repositories {
-        google {
-            content {
-                includeGroupByRegex("com\\.android.*")
-                includeGroupByRegex("com\\.google.*")
-                includeGroupByRegex("androidx.*")
-            }
-        }
-        mavenCentral()
 
-        // This is used only for internal Google builds.
-        maven { url = uri("../nowinandroid-prebuilts/m2repository") }
-        maven("https://androidx.dev/storage/compose-compiler/repository")
-        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-        val kotlin_repo_url: String? by project
-        val kotlin_version: String? by project
-        logger.info("Custom kotlin repository url: $kotlin_repo_url")
-        if (!kotlin_repo_url.isNullOrEmpty() && !kotlin_version.isNullOrEmpty()) {
-                        exclusiveContent {
-                                forRepository {
-                                        maven(kotlin_repo_url!!)
-                                    }
-                                filter {
-                                        includeVersionByRegex("org.jetbrains.kotlin", ".*", kotlin_version!!)
-                                    }
-                            }
-                    }
-    }
-}
 allprojects {
 
     val kotlin_language_version: String? by project

@@ -23,6 +23,9 @@ pluginManagement {
                 includeGroupByRegex("androidx.*")
             }
         }
+        maven { url = uri("../nowinandroid-prebuilts/m2repository") }
+        maven("https://androidx.dev/storage/compose-compiler/repository")
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
         mavenCentral()
         gradlePluginPortal()
 
